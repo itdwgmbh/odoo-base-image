@@ -11,10 +11,10 @@ before_script:
   - docker buildx create builder --use
 
 docker-build:
-  image: docker:stable
+  image: docker:26
   stage: build
   services:
-    - docker:dind
+    - docker:26-dind
   script:
     - |
       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then

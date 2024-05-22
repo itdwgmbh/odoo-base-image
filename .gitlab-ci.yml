@@ -1,14 +1,18 @@
+variables:
+  CI_IMAGE: $CI_REGISTRY_IMAGE
+  PLATFORM: linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7
+
+before_script:
+  - apk add --update --no-cache git
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+  - docker buildx create --use
+
 docker-build:
   image: docker:cli
   stage: build
   services:
     - docker:dind
-  variables:
-    DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  before_script:
-    - apk add --update --no-cache git
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
   script:
     - |
       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
@@ -16,8 +20,7 @@ docker-build:
       else
         DOCKER_TAG="$CI_COMMIT_REF_SLUG"
       fi
-    - docker buildx inspect --bootstrap || docker buildx create --use
-    - docker buildx build --pull --platform linux/amd64,linux/arm64 -t "$CI_REGISTRY_IMAGE:$DOCKER_TAG" --push .
+    - docker buildx build --push -t "$CI_IMAGE:$DOCKER_TAG" --platform "$PLATFORM" --cache-from "$CI_IMAGE" --build-arg BUILDKIT_INLINE_CACHE=1 .
   rules:
     - if: $CI_COMMIT_BRANCH
       exists:

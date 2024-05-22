@@ -10,13 +10,14 @@ docker-build:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
   script:
-    - docker buildx use mybuilder
-    - docker buildx inspect mybuilder --bootstrap
-    - docker buildx build --pull --platform linux/amd64,linux/arm64 -t "$DOCKER_IMAGE_NAME" --push .
     - |
       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
-        docker buildx build --pull --platform linux/amd64,linux/arm64 -t "$CI_REGISTRY_IMAGE:latest" --push .
+        DOCKER_TAG="latest"
+      else
+        DOCKER_TAG="$CI_COMMIT_REF_SLUG"
       fi
+    - docker buildx inspect --bootstrap || docker buildx create --use
+    - docker buildx build --pull --platform linux/amd64,linux/arm64 -t "$CI_REGISTRY_IMAGE:$DOCKER_TAG" --push .
   rules:
     - if: $CI_COMMIT_BRANCH
       exists:

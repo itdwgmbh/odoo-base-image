@@ -8,13 +8,10 @@ docker-build:
   before_script:
     - apk add --update --no-cache git
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    # Create and use the default context
-    - docker context create mycontext --docker "host=unix:///var/run/docker.sock"
-    - docker context use mycontext
-    - docker buildx create --use
-    - docker buildx inspect --bootstrap
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
   script:
+    - docker buildx use mybuilder
+    - docker buildx inspect mybuilder --bootstrap
     - docker buildx build --pull --platform linux/amd64,linux/arm64 -t "$DOCKER_IMAGE_NAME" --push .
     - |
       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then

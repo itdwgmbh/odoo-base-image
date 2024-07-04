@@ -40,6 +40,7 @@ RUN apt-get update && \
         python3-greenlet \
         python3-idna \
         python3-jinja2 \
+        python3-jwt \
         python3-ldap \
         python3-libsass \
         python3-lxml \

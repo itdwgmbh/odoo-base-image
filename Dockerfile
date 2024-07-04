@@ -66,6 +66,7 @@ RUN apt-get update && \
         python3-requests \
         python3-serial \
         python3-setuptools \
+        python3-simplejson \
         python3-slugify \
         python3-stdnum \
         python3-tz \

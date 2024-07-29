@@ -28,3 +28,13 @@ docker-build:
     - if: $CI_COMMIT_BRANCH
       exists:
         - Dockerfile
+
+pages:
+  stage: deploy
+  script:
+    - echo "Hello World" > public/index.html
+  artifacts:
+    paths:
+      - public
+  only:
+    - main

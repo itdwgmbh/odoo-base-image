@@ -11,10 +11,11 @@ before_script:
   - docker buildx create builder --use
 
 docker-build:
-  image: docker:26
+  image: container.itdw.cloud/public-access/docker-builder:latest
   stage: build
   services:
-    - docker:26-dind
+    - name: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/docker:26-dind
+      alias: docker
   script:
     - |
       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then

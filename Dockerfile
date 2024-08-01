@@ -1,5 +1,6 @@
 FROM debian:bookworm
-MAINTAINER IT-DW GmbH <support@it-dw.com>
+
+LABEL maintainer="IT-DW GmbH <support@it-dw.com>"
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
@@ -81,7 +82,9 @@ RUN apt-get update && \
         python3-xlwt \
         python3-zeep \
         wkhtmltopdf \
-        xz-utils 
+        xz-utils && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install rtlcss
 RUN npm install -g rtlcss
